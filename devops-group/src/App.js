@@ -3,7 +3,7 @@ import {
   generatePalette,
   getContrastRatio,
   convertColor,
-} from "./utils/colorUtils";
+} from "./utils/colorUtils.js";
 import "./App.css";
 
 function App() {
