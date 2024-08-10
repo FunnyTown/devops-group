@@ -1,81 +1,31 @@
 version: 2.1
 
-orbs:
-  node: circleci/node@5.0.2
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only:
+                - main
 
 jobs:
   build:
+    working_directory: ~/devops-group
     docker:
-      - image: cimg/node:14.19.0
+      - image: circleci/node:10.16.3
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
-          app-dir: devops-group
       - run:
-          name: Build React App
-          command: |
-            cd devops-group
-            npm run build
-      - persist_to_workspace:
-          root: .
+          name: update-npm
+          command: 'sudo npm install -g npm@5'
+      - restore_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
+      - run:
+          name: install-npm
+          command: npm install
+      - save_cache:
+          key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
-            - devops-group
-
-  test:
-    docker:
-      - image: cimg/node:14.19.0
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Run All Tests
-          command: |
-            cd devops-group
-            npm run test:ci
-
-  security-scan:
-    docker:
-      - image: owasp/zap2docker-stable
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run:
-          name: Run OWASP ZAP Scan
-          command: |
-            cd scripts
-            ./zap-test.sh
-      - store_artifacts:
-          path: zap-report.html
-          destination: zap-report
-
-  deploy:
-    docker:
-      - image: cimg/base:stable
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Deploy to EC2
-          command: |
-            ssh -i $SSH_KEY_FILE $EC2_USERNAME@$EC2_HOST "cd devops-group && ./deploy.sh"
-
-workflows:
-  version: 2
-  build-test-deploy:
-    jobs:
-      - build
-      - test:
-          requires:
-            - build
-      - security-scan:
-          requires:
-            - test
-      - approve-deployment:
-          type: approval
-          requires:
-            - security-scan
-      - deploy:
-          requires:
-            - approve-deployment
+            - ./node_modules
