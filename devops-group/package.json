@@ -19,7 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "test:mocha": "mocha 'test/**/*.test.js'",
+    "test:mocha": "mocha 'test/**/*.test.cjs'",
     "test:zap": "../scripts/zap-test.sh",
     "test:react": "react-scripts test --watchAll=false",
     "test:ci": "npm run test:mocha && npm run test:react -- --ci --coverage && npm run test:zap",
