@@ -11,14 +11,10 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Debug - List directory contents
+          name: Debug - Show package.json content
           command: |
-            ls -la
-            ls -la devops-group
-      - run:
-          name: Debug - Cat package.json
-          command: |
-            cat devops-group/package.json
+            cd devops-group
+            cat package.json
       - run:
           name: Clear npm cache and remove node_modules
           command: |
@@ -26,10 +22,16 @@ jobs:
             npm cache clean --force
             rm -rf node_modules package-lock.json
       - run:
-          name: Install dependencies
+          name: Install correct versions of React and TypeScript
           command: |
             cd devops-group
-            npm install
+            npm install --save-exact react@18.2.0 react-dom@18.2.0
+            npm install --save-dev --save-exact typescript@4.5.5
+      - run:
+          name: Install remaining dependencies
+          command: |
+            cd devops-group
+            npm install --legacy-peer-deps
       - run:
           name: Debug - npm list
           command: |
