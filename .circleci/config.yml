@@ -1,31 +1,102 @@
 version: 2.1
 
-workflows:
-  version: 2
-  build:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - main
+orbs:
+  node: circleci/node@5.0.2
+  slack: circleci/slack@4.1.0
 
 jobs:
   build:
-    working_directory: ~/devops-group
     docker:
-      - image: circleci/node:10.16.3
+      - image: cimg/node:14.19.0
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: devops-group
       - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@5'
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: install-npm
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          name: Build React App
+          command: |
+            cd devops-group
+            npm run build
+      - persist_to_workspace:
+          root: .
           paths:
-            - ./node_modules
+            - devops-group
+
+  test:
+    docker:
+      - image: cimg/node:14.19.0
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run All Tests
+          command: |
+            cd devops-group
+            npm run test:ci
+
+  security-scan:
+    docker:
+      - image: owasp/zap2docker-stable
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run OWASP ZAP Scan
+          command: |
+            cd scripts
+            ./zap-test.sh
+      - store_artifacts:
+          path: zap-report.html
+          destination: zap-report
+      - persist_to_workspace:
+          root: .
+          paths:
+            - zap-report.html
+
+  prepare-deployment:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Prepare Deployment Checklist
+          command: |
+            echo "Deployment Checklist:" > deployment-checklist.txt
+            echo "1. All tests passed: ✓" >> deployment-checklist.txt
+            echo "2. Security scan completed: ✓" >> deployment-checklist.txt
+            echo "3. Changes in this build:" >> deployment-checklist.txt
+            git log -1 --pretty=format:"%h - %an, %ar : %s" >> deployment-checklist.txt
+            echo "4. Attached ZAP security report" >> deployment-checklist.txt
+      - persist_to_workspace:
+          root: .
+          paths:
+            - deployment-checklist.txt
+
+workflows:
+  version: 2
+  build-test-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - security-scan:
+          requires:
+            - test
+      - prepare-deployment:
+          requires:
+            - security-scan
+      - approve-deployment:
+          type: approval
+          requires:
+            - prepare-deployment
+      - slack/on-hold:
+          requires:
+            - prepare-deployment
+          context: slack-secrets
+          channel: devops-deployments
+          template: basic_on_hold_1
