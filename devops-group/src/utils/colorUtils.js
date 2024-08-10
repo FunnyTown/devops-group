@@ -7,7 +7,7 @@ function generateRandomColor() {
     .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
-function generatePalette(lockedColors = []) {
+export function generatePalette(lockedColors = []) {
   return Array(5)
     .fill()
     .map((_, index) => {
@@ -15,7 +15,7 @@ function generatePalette(lockedColors = []) {
     });
 }
 
-function getContrastRatio(color) {
+export function getContrastRatio(color) {
   const r = parseInt(color.slice(1, 3), 16);
   const g = parseInt(color.slice(3, 5), 16);
   const b = parseInt(color.slice(5, 7), 16);
