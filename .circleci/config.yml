@@ -14,6 +14,13 @@ jobs:
           pkg-manager: npm
           app-dir: devops-group
       - run:
+          name: Debug - Node version and npm list
+          command: |
+            node --version
+            npm --version
+            cd devops-group
+            npm list --depth=0
+      - run:
           name: Build React App
           command: |
             cd devops-group
