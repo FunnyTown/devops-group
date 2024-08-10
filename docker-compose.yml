@@ -1,0 +1,11 @@
+version: "3"
+services:
+  web:
+    build: ./devops-group
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./devops-group:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
