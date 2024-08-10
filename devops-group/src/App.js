@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { generatePalette, getContrastRatio } from "./utils/colorUtils";
+import { generatePalette, getContrastRatio } from "./utils/colorUtils.js";
 import "./App.css";
 
 function App() {
