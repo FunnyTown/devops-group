@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   generatePalette,
   getContrastRatio,
   convertColor,
-} from "./utils/colorUtils.js";
+} from "./utils/colorUtils";
 import "./App.css";
 
 function App() {
   const [palette, setPalette] = useState([]);
   const [lockedCount, setLockedCount] = useState(0);
 
-  useEffect(() => {
-    generateNewPalette();
-  }, []);
-
-  const generateNewPalette = () => {
+  const generateNewPalette = useCallback(() => {
     setPalette((prevPalette) => {
       const lockedColorValues = prevPalette.slice(0, lockedCount);
       return generatePalette(lockedColorValues);
     });
-  };
+  }, [lockedCount]);
+
+  useEffect(() => {
+    generateNewPalette();
+  }, [generateNewPalette]);
 
   const toggleLock = (index) => {
     if (index === lockedCount) {
@@ -99,4 +99,4 @@ function App() {
 }
 
 export default App;
-/*Comment to test Pipeline*/ 
+/*Comment to test Pipeline*/

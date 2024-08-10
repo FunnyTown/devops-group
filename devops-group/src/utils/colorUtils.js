@@ -68,6 +68,8 @@ function rgbToHsl(r, g, b) {
       case b:
         h = (r - g) / d + 4;
         break;
+      default:
+        h = 0;
     }
     h /= 6;
   }
