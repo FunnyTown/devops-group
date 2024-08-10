@@ -10,14 +10,29 @@ jobs:
       - image: cimg/node:14.19.0
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
-          app-dir: devops-group
       - run:
-          name: Debug - Node version and npm list
+          name: Debug - List directory contents
           command: |
-            node --version
-            npm --version
+            ls -la
+            ls -la devops-group
+      - run:
+          name: Debug - Cat package.json
+          command: |
+            cat devops-group/package.json
+      - run:
+          name: Clear npm cache and remove node_modules
+          command: |
+            cd devops-group
+            npm cache clean --force
+            rm -rf node_modules package-lock.json
+      - run:
+          name: Install dependencies
+          command: |
+            cd devops-group
+            npm install
+      - run:
+          name: Debug - npm list
+          command: |
             cd devops-group
             npm list --depth=0
       - run:
