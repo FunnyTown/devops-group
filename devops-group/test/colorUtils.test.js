@@ -1,9 +1,9 @@
-import { expect } from "chai";
-import {
+const { expect } = require("chai");
+const {
   generateRandomColor,
   generatePalette,
   getContrastRatio,
-} from "../src/utils/colorUtils.js";
+} = require("../src/utils/colorUtils.js");
 
 describe("Color Utilities", () => {
   describe("generateRandomColor", () => {

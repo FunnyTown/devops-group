@@ -7,41 +7,19 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/node:14.19.0
+      - image: cimg/node:16.14.0
     steps:
       - checkout
       - run:
-          name: Debug - Show package.json content
+          name: Install dependencies
           command: |
             cd devops-group
-            cat package.json
-      - run:
-          name: Clear npm cache and remove node_modules
-          command: |
-            cd devops-group
-            npm cache clean --force
-            rm -rf node_modules package-lock.json
-      - run:
-          name: Install correct versions of React and TypeScript
-          command: |
-            cd devops-group
-            npm install --save-exact react@18.2.0 react-dom@18.2.0
-            npm install --save-dev --save-exact typescript@4.5.5
-      - run:
-          name: Install remaining dependencies
-          command: |
-            cd devops-group
-            npm install --legacy-peer-deps
-      - run:
-          name: Debug - npm list
-          command: |
-            cd devops-group
-            npm list --depth=0
+            npm ci
       - run:
           name: Build React App
           command: |
             cd devops-group
-            npm run build
+            CI=false npm run build
       - persist_to_workspace:
           root: .
           paths:
@@ -49,7 +27,7 @@ jobs:
 
   test:
     docker:
-      - image: cimg/node:14.19.0
+      - image: cimg/node:16.14.0
     steps:
       - attach_workspace:
           at: .

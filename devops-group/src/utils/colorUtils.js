@@ -1,4 +1,4 @@
-export function generateRandomColor() {
+function generateRandomColor() {
   const r = Math.floor(Math.random() * 256);
   const g = Math.floor(Math.random() * 256);
   const b = Math.floor(Math.random() * 256);
@@ -7,26 +7,21 @@ export function generateRandomColor() {
     .padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
 }
 
-export function generatePalette(lockedColors = []) {
+function generatePalette(lockedColors = []) {
   return Array(5)
     .fill()
     .map((_, index) => {
-      if (lockedColors[index]) {
-        return lockedColors[index];
-      } else {
-        return generateRandomColor();
-      }
+      return lockedColors[index] || generateRandomColor();
     });
 }
 
-export function getContrastRatio(color) {
+function getContrastRatio(color) {
   const r = parseInt(color.slice(1, 3), 16);
   const g = parseInt(color.slice(3, 5), 16);
   const b = parseInt(color.slice(5, 7), 16);
   const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
   return (luminance + 0.05) / (1 + 0.05);
 }
-
 export function convertColor(color) {
   // Convert hex to RGB
   const r = parseInt(color.slice(1, 3), 16);
