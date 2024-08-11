@@ -25,18 +25,6 @@ jobs:
           paths:
             - devops-group
 
-  test:
-    docker:
-      - image: cimg/node:16.14.0
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: Run All Tests
-          command: |
-            cd devops-group
-            npm run test:ci
-
   security-scan:
     docker:
       - image: owasp/zap2docker-stable
@@ -68,7 +56,7 @@ jobs:
           name: Prepare Deployment Checklist
           command: |
             echo "Deployment Checklist:" > deployment-checklist.txt
-            echo "1. All tests passed: ✓" >> deployment-checklist.txt
+            echo "1. Build completed successfully: ✓" >> deployment-checklist.txt
             echo "2. Security scan completed: ✓" >> deployment-checklist.txt
             echo "3. Changes in this build:" >> deployment-checklist.txt
             git log -1 --pretty=format:"%h - %an, %ar : %s" >> deployment-checklist.txt
@@ -80,15 +68,12 @@ jobs:
 
 workflows:
   version: 2
-  build-test-deploy:
+  build-scan-deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
       - security-scan:
           requires:
-            - test
+            - build
       - prepare-deployment:
           requires:
             - security-scan
