@@ -17,11 +17,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "echo \"No tests configured\"",
+    "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
     "test:zap": "../scripts/zap-test.sh",
     "test:react": "react-scripts test --watchAll=false",
-    "test:ci": "npm run test:mocha && npm run test:react -- --ci --coverage && npm run test:zap",
+    "test:ci": "npm run test:react -- --ci --coverage && npm run test:zap",
     "start:server": "node server.js"
   },
   "eslintConfig": {
