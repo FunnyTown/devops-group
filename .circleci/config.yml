@@ -10,11 +10,9 @@ jobs:
       - image: cimg/node:16.14.0
     steps:
       - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            cd devops-group
-            npm ci
+      - node/install-packages:
+          pkg-manager: npm
+          app-dir: devops-group
       - run:
           name: Build React App
           command: |
@@ -38,12 +36,12 @@ jobs:
             cd scripts
             ./zap-test.sh
       - store_artifacts:
-          path: zap-report.html
+          path: devops-group/zap-report.html
           destination: zap-report
       - persist_to_workspace:
           root: .
           paths:
-            - zap-report.html
+            - devops-group/zap-report.html
 
   prepare-deployment:
     docker:
