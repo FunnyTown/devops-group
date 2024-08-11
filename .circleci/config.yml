@@ -16,7 +16,7 @@ jobs:
   build:
     working_directory: ~/devops-group/devops-group
     docker:
-      - image: cimg/node:16.14.0
+      - image: cimg/node:10.8.2
     steps:
       - checkout
       - run:
