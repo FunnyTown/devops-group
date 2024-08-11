@@ -18,9 +18,12 @@ jobs:
     docker:
       - image: cimg/node:16.14.0
     steps:
-      - checkout
+      - checkout:
+          path: ~/devops-group
       - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
+          keys:
+            - dependency-cache-{{ checksum "package-lock.json" }}
+            - dependency-cache-
       - run:
           name: Install Dependencies
           command: npm ci
@@ -35,3 +38,4 @@ jobs:
           root: .
           paths:
             - build
+            - server.js
