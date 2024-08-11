@@ -18,15 +18,16 @@ jobs:
     docker:
       - image: cimg/node:16.14.0
     steps:
-      - checkout:
-          path: ~/devops-group/devops-group
+      - checkout
+      - run:
+          name: update-npm
+          command: 'sudo npm install -g npm@latest'
       - restore_cache:
           keys:
             - dependency-cache-{{ checksum "package-lock.json" }}
-            - dependency-cache-
       - run:
-          name: Install Dependencies
-          command: npm ci
+          name: install-npm
+          command: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
           paths:
